@@ -1,0 +1,51 @@
+[1mdiff --git a/.github/workflows/cd.yml b/.github/workflows/cd.yml[m
+[1mindex da2f173..c23ed50 100644[m
+[1m--- a/.github/workflows/cd.yml[m
+[1m+++ b/.github/workflows/cd.yml[m
+[36m@@ -4,7 +4,7 @@[m [mon:[m
+   workflow_dispatch:[m
+   # workflow_run:[m
+   #   workflows:[m
+[31m-  #     - "ci"[m
+[32m+[m[32m       - "ci"[m
+   #   branches:[m
+   #     - main[m
+   #   types:[m
+[1mdiff --git a/app.js b/app.js[m
+[1mindex d75235e..24019ad 100644[m
+[1m--- a/app.js[m
+[1m+++ b/app.js[m
+[36m@@ -25,8 +25,16 @@[m [mconst connectionPool = new Pool({[m
+ app.use(express.static('public'));[m
+ [m
+ // ルーティングサンプル1: /hello にアクセスすると "Hello World!" と返す.[m
+[32m+[m[32m// app.get('/hello', (req, res) => {[m
+[32m+[m[32m//   res.send('こんにちは！');[m
+[32m+[m[32m// });[m
+[32m+[m
+ app.get('/hello', (req, res) => {[m
+[31m-  res.send('Hello World!');[m
+[32m+[m[32m  res.send(`[m
+[32m+[m[32m<html><body>[m
+[32m+[m[32m  <h1>こんにちは！</h1>[m
+[32m+[m[32m</body></html>[m
+[32m+[m[32m`);[m
+ });[m
+ [m
+ // ルーティングサンプル2: /items にアクセスするとデータベースの favorite_fruit テーブルの内容を返す.[m
+[1mdiff --git a/app.test.js b/app.test.js[m
+[1mindex 69358a1..34764b4 100644[m
+[1m--- a/app.test.js[m
+[1m+++ b/app.test.js[m
+[36m@@ -25,3 +25,11 @@[m [mdescribe("ルートパス", () => {[m
+     expect(response.text).toMatch('<title>My First HTML</title>');[m
+   });[m
+ });[m
+[32m+[m
+[32m+[m[32mdescribe("/hello", () => {[m
+[32m+[m[32m  test("GET /hello で こんにちは と表示すること", async () => {[m
+[32m+[m[32m    const response = await request(app).get("/hello");[m
+[32m+[m[32m    expect(response.statusCode).toBe(200);[m
+[32m+[m[32m    expect(response.text).toMatch('<h1>こんにちは！</h1>');[m
+[32m+[m[32m  });[m
+[32m+[m[32m});[m

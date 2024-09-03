@@ -1,0 +1,70 @@
+---
+name: cd
+on:
+  workflow_dispatch:
+  # workflow_run:
+  #   workflows:
+  #     - "ci"
+  #   branches:
+  #     - main
+  #   types:
+  #     - "completed"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install AWS Lightsail plugin
+        shell: bash
+        run: |
+          sudo curl "https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl" -o "/usr/local/bin/lightsailctl"
+          sudo chmod +x /usr/local/bin/lightsailctl
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE_DEPLOY }}
+          aws-region: ap-northeast-1
+      - name: Docker Build and Push
+        run: |
+          docker build -t express-app:latest -f .github/workflows/Dockerfile .
+          aws lightsail push-container-image \
+            --service-name ${{ vars.AWS_LIGHTSAIL_SERVICE_NAME }} \
+            --image express-app:latest \
+            --label latest
+      - name: Start New Deployment to Lightsail
+        run: |
+          LATEST_IMAGE=$(aws lightsail get-container-images --service-name ${{ vars.AWS_LIGHTSAIL_SERVICE_NAME }} | jq -r .containerImages[0].image)
+          CREATE_RESULT=$(aws lightsail create-container-service-deployment \
+            --service-name ${{ vars.AWS_LIGHTSAIL_SERVICE_NAME }} \
+            --containers "{ \"express-app\": { \"image\": \"$LATEST_IMAGE\", \
+              \"environment\": { \
+                \"DB_HOST\": \"${{ secrets.AWS_LIGHTSAIL_DB_HOST }}\", \
+                \"DB_USER\": \"${{ secrets.AWS_LIGHTSAIL_DB_USER }}\", \
+                \"DB_PASSWORD\": \"${{ secrets.AWS_LIGHTSAIL_DB_PASSWORD }}\", \
+                \"DB_NAME\": \"${{ vars.AWS_LIGHTSAIL_DB_NAME }}\" \
+              }, \
+              \"ports\": { \"80\": \"HTTP\" } } }" \
+            --public-endpoint '{"containerName": "express-app", "containerPort": 80}')
+          echo $CREATE_RESULT | jq
+          echo "SERVICE_URL=$(echo $CREATE_RESULT | jq -r .containerService.url)" >> $GITHUB_ENV
+      - name: Wait for Deployment to Finish
+        run: |
+          while [ 1 ]; do
+            state=$(aws lightsail get-container-service-deployments --service-name ${{ vars.AWS_LIGHTSAIL_SERVICE_NAME }} --query 'deployments[0].state' --output text)
+            if [ $state = "ACTIVE" ]; then
+              exit 0
+            elif [ $state = "FAILED" ]; then
+              exit 1
+            fi
+            echo "Current deplyoment state is '${state}'. Retrying..."
+            sleep 5
+          done
+      - name: Check request
+        run: |
+          curl ${{ env.SERVICE_URL }}

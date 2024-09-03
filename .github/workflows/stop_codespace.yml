@@ -1,0 +1,20 @@
+name: Stop Codespace
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * *'  # JST 18:00 => UTC時間で毎日9:00に実行
+
+permissions:
+  contents: write
+
+jobs:
+  stop:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Stop Codespace
+      run: |
+        stop_targets=$(gh codespace list --json repository,name -q '.[] | select(.repository == "${{ github.repository }}") | .name')
+        echo $stop_targets | while read -r codespace; do gh codespace stop -c "$codespace"; done || true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

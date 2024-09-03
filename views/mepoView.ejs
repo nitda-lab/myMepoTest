@@ -1,0 +1,127 @@
+<%= /* https://github.com/mde/ejs */ %>
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+        <meta charset="UTF-8">
+        <title>MEPO!!</title>
+        <link rel="stylesheet" type="text/css" href="/css/mepoStyle.css">
+    </head>
+
+    <body>
+
+        <!-- <button onclick="playAudio()">再生</button> -->
+
+
+        <p>MEPO!!</p>
+        <!-- <h2>最新のメッセージaaa</h2> -->
+        <!-- 吹き出しごとにdivのコンテナ用意した方がaaa -->
+
+        <div class="message-container">
+            <!--
+                    <img id="back-image" src="/ふきだしピンク.png" alt="ふきだし" width="500px">
+                    <img id="middle-image" src="/ふきだしピンク.png" alt="ふきだし" width="500px">
+                    -->
+            <img id="back-image" src="/image/ふきだしピンク.png" alt="ふきだし">
+
+            <div class=overlay-text>
+                <div id="third-latest-msg"></div>
+            </div>
+        </div>
+
+        <div class="message-container">
+            <!--
+                    <img id="back-image" src="/ふきだしピンク.png" alt="ふきだし" width="500px">
+                    <img id="middle-image" src="/ふきだしピンク.png" alt="ふきだし" width="500px">
+                    -->
+            <img id="middle-image" src="/image/ふきだしピンク.png" alt="ふきだし">
+
+            <div class=overlay-text>
+                <div id="second-latest-msg"></div>
+            </div>
+        </div>
+
+        <div class="message-container">
+            <!--
+                    <img id="back-image" src="/ふきだしピンク.png" alt="ふきだし" width="500px">
+                    <img id="middle-image" src="/ふきだしピンク.png" alt="ふきだし" width="500px">
+                    -->
+            <img id="front-image" src="/image/ふきだしピンク.png" alt="ふきだし">
+
+            <div class=overlay-text>
+                <div id="latest-msg"></div>
+            </div>
+        </div>
+
+
+
+
+        <div class="oneArea">
+
+
+            <div class="image-character">
+                <img src="/image/mepo2_背景透過.png" alt="めぽ画像">
+            </div>
+
+            <a href="mepo/chat-history">会話の履歴</a>
+
+
+
+            <!-- 入力欄 -->
+            <form action="mepo/post" method="post">
+                メッセージ : <input type="text" name="mepoTask" required maxlength="140">
+                <input type="submit" value="投稿">
+            </form><br>
+
+
+            <script src="/socket.io/socket.io.js"></script>
+            <script>
+                const socket = io();
+
+                var latestId = 0;
+
+                const audio = new Audio('audio/mepo4.wav');
+                audio.volume = 0.3;
+
+                const latestMessage = document.getElementById('latest-msg');
+                const secondLatestMessage = document.getElementById('second-latest-msg'); //divタグ(id=secondLatestMsg)を取得
+                const thirdLatestMessage = document.getElementById('third-latest-msg');
+
+                function playAudio() {
+                    audio.play();
+                }
+
+                function updateTodoList() {
+                    fetch('/mepo/getLatestMessage')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! Status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data[2].id != latestId) {
+                                if (latestId != 0) {
+                                    playAudio();
+                                }
+                                latestId = data[2].id;
+                                latestMessage.textContent = data[2].message + "めぽ～";
+                                secondLatestMessage.textContent = data[1].message + "めぽ～";
+                                thirdLatestMessage.textContent = data[0].message + "めぽ～";
+                            }
+
+                        })
+                        .catch(error => console.error('Error fetching todo list:', error));
+                }
+
+                // 3秒ごとにupdateTodoListを呼び出して、画面を更新する
+                //setInterval(updateTodoList, 3000);
+
+                // ページロード時に一度実行して即時表示
+                //updateTodoList();
+
+            </script>
+
+    </body>
+
+    </html>

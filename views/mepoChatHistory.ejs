@@ -1,0 +1,37 @@
+<%= /* https://github.com/mde/ejs */ %>
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+        <meta charset="UTF-8">
+        <title>MEPO!!</title>
+        <!-- <link rel="stylesheet" type="text/css" href="/css/mepoStyle.css"> -->
+    </head>
+
+    <body>
+
+        <!-- <button onclick="playAudio()">再生aaa</button> -->
+
+
+        <a href="/mepo">戻る</a>
+        <h1>会話履歴</h1>
+        <div class="chat-container">
+            <% messages.forEach((message)=> { %>
+                <div class="message">
+                    <div class="text">
+                        <%= message.message %>めぽ～
+                            (<%= new Date(message.time).toLocaleString('ja-JP', { year: 'numeric' , month: '2-digit' , day: '2-digit' ,
+                                hour: '2-digit' , minute: '2-digit' }) %>)
+                    </div>
+                </div>
+                <% }); %>
+        </div>
+
+
+        <script>
+
+        </script>
+
+    </body>
+
+    </html>

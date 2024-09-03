@@ -1,0 +1,115 @@
+/* 全体のスタイル */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f7f9fc;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    
+}
+
+
+h1 {
+    color: #009879;
+    text-align: center;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    width: 70%;
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+input[type="submit"],
+button[type="submit"] {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #009879;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+input[type="submit"]:hover,
+button[type="submit"]:hover {
+    background-color: #b1bab8;
+}
+
+/* タスクリストのスタイル */
+form>div {
+    margin: 10px 0;
+}
+
+
+span {
+    font-size: 18px;
+    
+}
+
+
+button[type="submit"] {
+    margin-left: 10px;
+}
+
+form>br {
+    clear: both;
+}
+
+/* 完了したタスクのスタイル */
+span.done {
+    text-decoration: line-through;
+    color: #888;
+}
+
+/* レスポンシブデザイン */
+@media screen and (max-width: 600px) {
+    input[type="text"] {
+        width: 100%;
+        margin: 0 0 10px 0;
+    }
+
+    button[type="submit"] {
+        width: 100%;
+        /* margin-top: 10px; */
+    }
+
+    form>div {
+        text-align: center;
+    }
+}
+
+button.deleteButton[type="submit"] {
+    background-color: #b1bab8;
+    color: #5a5f5e;
+    padding: 2px;
+    font-size: 12px;
+    /* transform: translateX(50%); */
+    vertical-align: middle;
+}
+
+button.completeButton[type="submit"] {
+    padding: 2px; 
+    font-size: 16px;
+    /* transform: translateX(50%); */
+    vertical-align: middle;
+}
+
+.wrapper {
+    display: grid;
+    grid-template-columns: 100px 1fr 1fr;
+    /* grid-template-rows: 100px 100px; */
+    /* text-align: center; */
+    gap: 10px;
+    align-items: center;
+    
+}

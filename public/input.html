@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Welcome</title>
+    <link rel="stylesheet" type="text/css" href="public/mystyle.css">
+  </head>
+
+  <body>
+    <!-- <style>
+        form {
+          margin-top: 20px;
+          margin-left: 20px;
+          width: 200px;
+        }
+        input[type="submit"] {
+          margin-top: 20px;
+        }
+      </style> -->
+      
+    <!-- formにactionとmethodを追加 -->
+    <form action="welcome" method="post">
+      name : <input type="text" maxlength="256" required name="userName"><br><br>
+      <input type="submit" OK"> <!-- ここを追加 -->
+    </form>
+  </body>
+</html>

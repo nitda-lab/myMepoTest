@@ -1,0 +1,90 @@
+/*MEPOやり直しaaa*/
+
+body {
+    text-align: center;
+    font-family: sans-serif;
+    font-size: 1vm;
+    display: grid;
+    place-items: center;
+    height: 100vh;
+
+    /* background-color: #F1ECEB; */
+    background-color: white;
+}
+
+p {
+    font-size: medium;
+}
+
+.message-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    /* 相対的な単位に変更 */
+    width: 50vw;
+    /* 相対的な幅に変更 */
+    max-width: 30vh;
+    /* 画面の高さに基づいた最大幅 */
+    height: auto;
+}
+
+.message-container img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.message-container #back-image {
+    width: 60%;
+    opacity: 0.5;
+}
+
+.message-container #middle-image {
+    width: 80%;
+    opacity: 0.7;
+}
+
+.message-container #front-image {
+    width: 100%;
+    /* opacity: 1; */
+}
+
+.message-container .overlay-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.message-container .overlay-text #third-latest-msg {
+    color: rgb(0, 0, 0);
+    font-size: 100%;
+    inline-size: 400px;
+    /*文字の折り返し：画像サイズに合わせて変更*/
+}
+
+.message-container .overlay-text #second-latest-msg {
+    color: rgb(0, 0, 0);
+    font-size: 150%;
+    inline-size: 400px;
+    /*文字の折り返し：画像サイズに合わせて変更*/
+}
+
+.message-container .overlay-text #latest-msg {
+    color: black;
+    font-size: 150%;
+    inline-size: 400px;
+    /*文字の折り返し：画像サイズに合わせて変更*/
+}
+
+.image-character img {
+
+    width: 50%;
+    /* 相対的な幅に変更 */
+    height: auto;
+
+}
+
+/*----------------------------ここからふきだし--------------------------*/

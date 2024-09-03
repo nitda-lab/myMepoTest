@@ -1,0 +1,91 @@
+<%= /* https://github.com/mde/ejs */ %>
+  <!DOCTYPE html>
+  <html>
+
+  <head>
+    <meta charset="utf-8" />
+    <title>TODO</title>
+    <link rel="stylesheet" type="text/css" href="/mystyle.css">
+  </head>
+
+  <body>
+    <h1>TODO</h1>
+    <div id="todoList"></div>
+    <form action="todo" method="post">
+      タスクの追加 : <input type="text" name="task" required>
+      <input type="submit" value="追加">
+    </form><br>
+
+    <form action="checkTask" method="post">
+      <div class="wrapper">
+        <% todoList.forEach((todo)=> { %>
+          <!-- <button type="submit" name="completedTask" value="<%= todo.title %>">完了</button> <%= todo.title %> <br> -->
+
+          <% if( todo.completed==true){ %>
+            <div></div>
+            <div><span class="done">
+                <%= todo.title %>
+              </span></div>
+            <div><button class="deleteButton" type="submit" name="deletedTask" value="<%= todo.id %>">削除</button></div>
+
+            <!-- <br> -->
+            <% } else { %>
+              <div><button class="completeButton" type="submit" name="completedTask" value="<%= todo.id %>">完了</button>
+              </div>
+              <div><span class="notDone">
+                  <%= todo.title %>
+                </span></div>
+              <div><button class="deleteButton" type="submit" name="deletedTask" value="<%= todo.id %>">削除</button>
+              </div>
+              <!-- <br> -->
+              <% } %>
+                <% }) %>
+      </div>
+
+      <!--<input type="submit" value="OK">-->
+    </form>
+
+
+    <!--<ul>
+    <% todoList.forEach((todo) => { %>
+      <li><%= todo.title %></li>
+    <% }) %>
+  </ul>-->
+    <br><br>
+    <!-- 以下ポーリングの試し --- -->
+    <!-- <script>
+      function updateTodoList() {
+        fetch('/get-latest-todo')
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            const todoListDiv = document.getElementById('todoList');
+            if (!todoListDiv) {
+              console.error('Element with id "todoList" not found.');
+              return;
+            }
+            todoListDiv.innerHTML = ''; // 既存のTODOリストをクリア
+            data.forEach(todo => {
+              const p = document.createElement('p');
+              p.textContent = todo.title;
+              todoListDiv.appendChild(p);
+            });
+          })
+          .catch(error => console.error('Error fetching todo list:', error));
+      }
+
+      // 3秒ごとにupdateTodoListを呼び出して、画面を更新する
+      setInterval(updateTodoList, 3000);
+
+      // ページロード時に一度実行して即時表示
+      updateTodoList();
+    </script> -->
+    <!-- ---- -->
+
+  </body>
+
+  </html>

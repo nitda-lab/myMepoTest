@@ -1,0 +1,76 @@
+/* body {
+    font-size: 2rem; /* 基本フォントサイズ 
+  } */
+
+p {
+    background: url('ふきだしピンク.png') no-repeat;
+    background-size: cover;
+    background-size: contain;
+    /* 画像が要素に収まるように調整 */
+    /* background-position: center; */
+    background-repeat: no-repeat;
+    padding: 20px;
+}
+
+.imageCharacter img{
+    width: 20%; /* ビューポートの幅に合わせる */
+    height: auto; /* 高さを自動調整 */
+}
+
+.messageContainer {
+    position: relative;
+    display: inline-block;
+    width: 40%;
+    overflow: hidden; /*追加*/
+    /* height: auto; */
+}
+
+ .messageContainer img {
+    display: block;
+} 
+
+
+.messageContainer #backMessage{
+    width: 30%;
+    opacity: 0.5;
+}
+
+.messageContainer #middleMessage{
+    width: 40%;
+    opacity: 0.7;
+}
+
+.messageContainer #frontMessage{
+    /* width: 50%; */
+    width: 100%;
+    /* width: 450px; */
+    opacity: 1;
+}
+
+.messageContainer .mepoMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* color: #fff; */
+    /* color: red; */
+    /* font-size: 160px; */
+    /* inline-size: 400px; 幅（折り返し位置） */
+    /* block-size: 200px; 高さ */
+    /* font-size: 1rem;
+    inline-size: 20rem; */
+    /* max-width: 600px */
+}
+
+
+.messageContainer #latestMsg{
+    /* position: fixed; */
+    position: absolute;
+    /* color: red; */
+    color: #fff;
+    font-size: 16px;
+    inline-size: 400px; /*幅（折り返し位置）*/
+    block-size: 200px; /*高さ*/
+}
+
+
