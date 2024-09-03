@@ -68,15 +68,17 @@
 
 
             <!-- 入力欄 -->
-            <form action="mepo/post" method="post">
-                メッセージ : <input type="text" name="mepoTask" required maxlength="140">
-                <input type="submit" value="投稿">
-            </form><br>
+
+            <!-- formからjavascriptへのアクションイベントにへんこう -->
+
+            メッセージ : <input type="text" name="mepoTask" id="inputText" required maxlength="140">
+            <input type="submit" id="sendButton" value="投稿">
+
 
 
             <script src="/socket.io/socket.io.js"></script>
             <script>
-                const socket = io();
+                
 
                 var latestId = 0;
 
@@ -86,6 +88,36 @@
                 const latestMessage = document.getElementById('latest-msg');
                 const secondLatestMessage = document.getElementById('second-latest-msg'); //divタグ(id=secondLatestMsg)を取得
                 const thirdLatestMessage = document.getElementById('third-latest-msg');
+                
+                //------以下socket.io関係の処理
+                const socket = io(); 
+
+                document.getElementById('sendButton').addEventListener('click', () => {
+                    let inputMessage = document.getElementById("inputText").value;
+                    if (inputMessage === '') {
+                        return;
+                    }
+                    // 'sendMessage' イベントを発火、メッセージを送信
+                    socket.emit('sendMessage', inputMessage);
+                });
+
+                socket.on('receiveMessage', (jsonRows) => {
+                    const rows = JSON.parse(jsonRows); //json形式で受け取ったテーブル情報を通常の形に変換
+                    
+                    //受信したメッセージを吹き出し内に表示
+                    console.log(".message:" + rows[2].message);
+                    if (rows[2].id != latestId) {
+                        if (latestId != 0) {
+                            playAudio();
+                        }
+                        latestId = rows[2].id;
+                        latestMessage.textContent = rows[2].message + "めぽ～";
+                        secondLatestMessage.textContent = rows[1].message + "めぽ～";
+                        thirdLatestMessage.textContent = rows[0].message + "めぽ～";
+                    }
+                });
+                ///------ここまでsocket.io関係処理
+
 
                 function playAudio() {
                     audio.play();
@@ -118,7 +150,7 @@
                 //setInterval(updateTodoList, 3000);
 
                 // ページロード時に一度実行して即時表示
-                //updateTodoList();
+                // updateTodoList();
 
             </script>
 

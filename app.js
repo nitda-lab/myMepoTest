@@ -1,11 +1,3 @@
-// 参考:
-// express
-//    https://expressjs.com/ja/starter/hello-world.html
-//    https://expressjs.com/ja/starter/static-files.html
-// pg (node-postgres)
-//    https://node-postgres.com/
-// 分割代入
-//    https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
 
 
 const http = require('http');
@@ -13,176 +5,86 @@ const http = require('http');
 const express = require('express');
 
 
-const socketIo = require('socket.io');
+const socketIo = require('socket.io'); //socket.ioのインポート
 
 
 const app = express();
 
-const server = http.Server(app);
+const server = http.Server(app);//serverの宣言
 
 app.set('view engine', 'ejs');
-app.use(express.urlencoded({ extended: true }));  // ここを追加
-//app.use(express.static('link'));
+app.use(express.urlencoded({ extended: true }));
 
-const io = socketIo(server);
+const io = socketIo(server); //ioの宣言
 
-//css適応のためのやつ
 const path = require('path');
-app.use(express.static(path.join(__dirname, 'public')));
 
-// // PostgreSQL のクライアントを作成.
-// const { Pool } = require('pg');
-// const connectionPool = new Pool({
-//   ...dbConfig,
-//   max: 10,
-// });
-
-// public/ に配置した静的ファイルを返す.
 app.use(express.static(path.join(__dirname, 'public')));  // 静的ファイルの提供
 
-
+//ioの接続の設定
 io.on('connection', (socket) => {
   console.log('connected');
 });
 
+io.on('connection', (socket) => {
+  console.log('user connected');
 
-// ルーティングサンプル1: /hello にアクセスすると "Hello World!" と返す.
-// app.get('/hello', (req, res) => {
-//   res.send('こんにちは！');
-// });
+  // 'sendMessage' というイベント名で受信できる
+  // 第一引数には受信したメッセージが入り、ログに出力する
+  socket.on('sendMessage', (message) => {
+    console.log('Message has been sent: ', message);
+    //------------------
+    //<<受信したメッセージをデータベースに登録する処理を書く>>
+    //----------------
 
-// app.get('/hello', (req, res) => {
-//   res.send(`
-// <html><body>
-//   <h1>こんにちは！</h1>
-// </body></html>
-// `);
-// });
+    //データベースから最新のメッセージのrowsを取得
+    //try {
+      //     // const { rows } = await connectionPool.query('SELECT * FROM mepo_message WHERE id = (SELECT MAX(id) FROM mepo_message)');
+      //      const { rows } = await connectionPool.query('SELECT * FROM mepo_message WHERE id >= (SELECT MAX(id) FROM mepo_message)-2');
+      //     console.log(rows);
+      //     res.json(rows);  // クライアントにJSON形式でTODOリストを返す
+      //   } catch (error) {
+      //     console.error('Error fetching todo list:', error);
+      //     res.status(500).json({ error: 'Failed to fetch todo list' });
+      //   }
 
-// // ルーティングサンプル2: /items にアクセスするとデータベースの favorite_fruit テーブルの内容を返す.
-// app.get('/items', async (req, res) => {
-//   const { rows } = await connectionPool.query('SELECT * FROM favorite_fruit');
-//   res.json(rows);
-// });
 
-// // app.post('/welcome', (req, res) => {
-// //   //var element = document.getElementById( "userName" ) ; // プロパティの取得
-// //   //var returnValue = element.ValidityState ;	// ValidityState
-// //   const { userName } = req.body;  // ここを追加
-// //   if (userName.length >= 256) {
-// //   res.status(400).send(`
-// //   <html>
-// // <head>
-// // <title>Error</title>
-// // </head>
-// // <body>
-// // <h1>エラー: 名前が長すぎます。
-// // </h1>
-// // <p>名前は255文字以内で入力してください。</p>
-// // <br><br>
-// // <a href="input.html">戻る</a>
-// // </body>
-// // </html>
-// //     `);
-// //   }else{
-// //     res.send(`
-// // <html>
-// //   <head>
-// //      <title>Welcome Servlet</title>
-// //   </head>
+      //これはデータベースなしでrowを偽造するための疑似データです
+      const rows = [
+        {
+          id: 101,
+          message: 'System maintenance will occur at midnight.',
+          date: '2024-09-01 23:59:59',
+        },
+        {
+          id: 102,
+          message: 'New user registration has been temporarily disabled.',
+          date: '2024-09-02 12:34:56',
+        },
+        {
+          id: 103,
+          message: 'The issue with payment processing has been resolved.',
+          date: '2024-09-03 08:15:30',
+        },
+      ];
+      
+      const jsonRows = JSON.stringify(rows);
+      console.log(jsonRows);
+      
 
-// //   <body>
-// //     <h1>こんにちは、${userName} さん！</h1>  <!-- ここを変更 -->
-// //     <br><br>
-// //     <a href="input.html">戻る</a>
-// //   </body>
-// // </html>
-// // `);
-// //     }
-// // });
+      
+      
+    // 'receiveMessage' というイベントを発火、最新のテーブル情報を全てのクライアントに対して送信する
+    io.emit('receiveMessage', jsonRows);
+    console.log("send message  " + jsonRows);
 
-// app.post('/welcome', (req, res) => {
-//   const { userName } = req.body;
-//   res.send(`
-// <html>
-//   <head>
-//     <title>Welcome Servlet</title>
-//   </head>
-//   <body>
-//     <h1>こんにちは、${userName} さん！</h1>  <!-- ここを変更 -->
-//     <br><br>
-//     <a href="input.html">戻る</a>
-//   </body>
-// </html>
-//   `);
-// });
+    
+    
+  });
+});
 
-// app.get('/select', (req, res) => {
-//   const { hobby } = req.query;
-//   res.render('hobbyResultView', { hobbyItems: [hobby].flat().filter(v => v) });
-// });
 
-// module.exports = { app, connectionPool };
-
-// // app.get('/todo', async (req, res) => {
-// //   const rows = [];
-// //   res.render('todoView', { todoList: rows });
-// // });
-
-// app.get('/todo', async (req, res) => {
-//   const { rows } = await connectionPool.query('SELECT * FROM todo ORDER BY id');  // ここを変更する
-//   // console.log(rows);
-//   res.render('todoView', { todoList: rows });
-// });
-
-// //TODOリストをJson形式で返すエンドポイント
-// app.get('/get-latest-todo', async (req, res) => {
-//   try {
-//     const { rows } = await connectionPool.query('SELECT * FROM todo ORDER BY id');
-//     res.json(rows);  // クライアントにJSON形式でTODOリストを返す
-//   } catch (error) {
-//     console.error('Error fetching todo list:', error);
-//     res.status(500).json({ error: 'Failed to fetch todo list' });
-//   }
-// });
-
-// app.post('/todo',  async (req, res) => {
-//   const { task } = req.body;
-//   await connectionPool.query('INSERT INTO todo (title) VALUES ($1)', [task]);
-//   //const { rows } = await connectionPool.query('SELECT * FROM todo');  // ここを変更する
-//   /*res.send(`
-//     <html>
-//       <head>
-//         <title>Welcome Servlet</title>
-//       </head>
-//       <body>
-//         <h1>こんにちは、${task} さん！</h1>  <!-- ここを変更 -->
-//         <br><br>
-//         <a href="input.html">戻る</a>
-//       </body>
-//     </html>
-//       `);*/
-//   //res.render('todoView', { todoList: rows });
-//   res.redirect('/todo'); // リダイレクトで再送信を防ぐ
-// });
-
-// app.post('/checkTask',  async (req, res) => {
-//   // const checkedTask = req.body.completedTask;
-//   const { completedTask, deletedTask} = req.body;
-//   console.log("完了：" + completedTask);
-//   console.log("削除：" + deletedTask);
-//   // const checkedTask = document.getElementById("completedTask").value;
-//   // console.log(checkedTask);
-//   if(completedTask != undefined){
-//     await connectionPool.query('UPDATE todo SET completed = true WHERE id=($1)', [completedTask]);
-//   } 
-  
-//   if(deletedTask != undefined){
-//     await connectionPool.query('DELETE FROM todo WHERE id=($1)', [deletedTask]);
-//   }
-     
-//   res.redirect('/todo'); // リダイレクトで再送信を防ぐ
-// });
+//--以下変更なし。最下部のexport設定は大事
 
 app.get('/mepo', async (req, res) => {
   // const { rows } = await connectionPool.query('SELECT * FROM mepo_message WHERE id = (SELECT MAX(id) FROM mepo_message)');  // ここを変更する
@@ -224,4 +126,4 @@ app.post('/mepo/post',  async (req, res) => {
 //   res.render('mepoChatHistory',{messages: rows});
 // }
 // )
-module.exports = { app,server };
+module.exports = { app,server }; //appとserverをエクスポート。main.jsへ
